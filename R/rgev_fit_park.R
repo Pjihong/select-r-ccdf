@@ -1,5 +1,3 @@
-#' @export
-rgev.fit.park <- rgev.fit.park
 #' Fit r-Largest GEV Model (Stationary)
 #' @param xdat matrix of r-largest order statistics
 #' @param r number of order statistics to use
