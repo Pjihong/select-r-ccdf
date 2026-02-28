@@ -16,9 +16,9 @@ gevrSeqTests.park = function (data, bootnum = NULL, method = c("ed", "pbscore", 
     for (i in 1:R) {
       result[i, 1] <- i
       if (method == "multscore") 
-        fit <- gevrMultScore(data[, 1:i], bootnum, information)
+        fit <- eva::gevrMultScore(data[, 1:i], bootnum, information)
       if (method == "pbscore") 
-        fit <- gevrPbScore(data[, 1:i], bootnum, information, 
+        fit <- eva::gevrPbScore(data[, 1:i], bootnum, information, 
                            allowParallel, numCores)
       result[i, 2] <- fit$p.value
       result[i, 5] <- fit$statistic
@@ -66,7 +66,7 @@ gevrEd.park1 =function (data, theta = NULL)
   ifail=0
   
   if (is.null(theta)) {
-    y <- tryCatch(gevrFit(data, method = "mle"), error = function(w) {
+    y <- tryCatch(eva::gevrFit(data, method = "mle"), error = function(w) {
       return(NULL)
     }, warning = function(w) {
       return(NULL)

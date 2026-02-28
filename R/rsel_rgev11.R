@@ -93,7 +93,7 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
                                       parx=result[sth,2:6])
         
         # H0: r= sth,  H1: r= sth-1
-        result[sth,7]= cvm.test(mtheoU[,sth], null="punif")$p.value
+        result[sth,7]= goftest::cvm.test(mtheoU[,sth], null="punif")$p.value
         
          #       cat("sth, p.val=", sth, result[sth,6],"\n" )
         
@@ -106,7 +106,7 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
         iD[,sth]= spacing.gof.gev11(xdat, r= sth-1, 
                                     parx=result[sth,2:6])
         
-        result[sth,7]= cvm.test(iD[,sth], null="pexp")$p.value
+        result[sth,7]= goftest::cvm.test(iD[,sth], null="pexp")$p.value
 
         #       cat("sth, p.val=", sth, result[sth,6],"\n" )
 
@@ -153,14 +153,14 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
         
         mtheoU[,sth]= rcond.gof.gev11(xdat, r=sth, model=model,
                                       parx=result[sth,2:6])
-        result[sth,7]= cvm.test(mtheoU[,sth], null="punif")$p.value
+        result[sth,7]= goftest::cvm.test(mtheoU[,sth], null="punif")$p.value
         
       }
       if(method=="spacing" & sth >= 2){
         
         iD[,sth]= spacing.gof.gev11(xdat, r= sth-1, 
                                     parx=result[sth,2:6])
-        result[sth,7]= cvm.test(iD[,sth], null="pexp")$p.value 
+        result[sth,7]= goftest::cvm.test(iD[,sth], null="pexp")$p.value 
       }
       
     } #end for sth
