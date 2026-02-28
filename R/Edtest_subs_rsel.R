@@ -86,10 +86,10 @@ gevrEd.park1 =function (data, theta = NULL)
   }
   
   if(theta[2] < 1e-4) theta[2]= 1e-4
-  Diff1 <- dgevr(data[, 1:R], loc = theta[1], scale = theta[2], 
+  Diff1 <- eva::dgevr(data[, 1:R], loc = theta[1], scale = theta[2], 
                  shape = theta[3], log.d = TRUE)
   
-  Diff2= dgevr(data[, 1:(R-1)], loc = theta[1], scale = theta[2], 
+  Diff2= eva::dgevr(data[, 1:(R-1)], loc = theta[1], scale = theta[2], 
                shape = theta[3], log.d = TRUE)
   
   Diff= Diff1 - Diff2
