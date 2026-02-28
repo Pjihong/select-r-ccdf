@@ -46,3 +46,20 @@ res3 <- rsel.rgev11(xdat2, model = "rgev11",
 cat("Selected r (ccdf) =", res3$r.sel, "\n")
 
 cat("\n=== 모든 테스트 통과 ===\n")
+
+# ---- 테스트 4: 실제 데이터 (산청) ----
+cat("\n--- 테스트 4: sancheong 실제 데이터 ---\n")
+data(sancheong)
+cat("데이터 크기:", nrow(sancheong), "행 x", ncol(sancheong), "열\n")
+cat("연도 범위:", min(sancheong$year), "-", max(sancheong$year), "\n")
+cat("연최대값(X1) 범위:", min(sancheong$X1), "-", max(sancheong$X1), "mm\n")
+
+xdat_sc <- as.matrix(sancheong[, 2:11])   # X1 ~ X10, r 최대 10
+
+res_sc <- rsel.rgev(xdat_sc, method = "ed", sigL = 0.05)
+cat("rsel.rgev  선택 r =", res_sc$r.sel, "\n")
+
+res_sc2 <- rsel.rgev11(xdat_sc, model = "rgev11",
+                        method = "ed", sigL = 0.05)
+cat("rsel.rgev11 선택 r =", res_sc2$r.sel, "\n")
+cat("MLE (mu0,mu1,sig0,sig1,kappa) =", round(res_sc2$mle, 4), "\n")

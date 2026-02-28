@@ -136,3 +136,59 @@ If you use this package, please cite:
 ## License
 
 GPL-3 © Pjihong
+
+---
+
+## 📊 Included Dataset
+
+### `sancheong` — Sancheong Station r-Largest Rainfall
+
+| 항목 | 내용 |
+|------|------|
+| 관측소 | 산청 (ASOS 285), 경남 |
+| 기간 | 1972 ~ 2022 (51년) |
+| 변수 | `year`, `X1`(연최대) ~ `X20`(20번째 최대) |
+| 단위 | mm (일강수량) |
+| 크기 | 51 × 21 |
+
+```r
+data(sancheong)
+head(sancheong)
+
+# r-largest 행렬 추출 (year 열 제외)
+xdat <- as.matrix(sancheong[, -1])
+
+# 최적 r 선택
+result <- rsel.rgev(xdat, method = "ed", sigL = 0.05)
+cat("Selected r =", result$r.sel, "\n")
+```
+
+---
+
+## 📊 내장 데이터: `sancheong`
+
+산청 기상관측소(경남) 연 최대 일강수량 r-largest 순서통계량
+
+```r
+data(sancheong)
+head(sancheong)
+#   year    X1    X2   X3 ...
+# 1 1972  67.0    NA   NA ...
+# 2 1973 118.0  94.0 91.4 ...
+```
+
+| 항목 | 내용 |
+|------|------|
+| 기간 | 1972 ~ 2022년 (51년) |
+| r 최대 | 20 (연간 최대 20개 값) |
+| 단위 | mm (일강수량) |
+| 출처 | 기상청 (KMA) |
+
+```r
+# 실제 데이터로 r 선택
+data(sancheong)
+xdat <- as.matrix(sancheong[, 2:11])   # X1 ~ X10
+
+rsel.rgev(xdat, method = "ed")         # 정상 모형
+rsel.rgev11(xdat, method = "ed")       # 비정상 모형 (위치모수 선형추세)
+```
