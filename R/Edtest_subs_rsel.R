@@ -16,9 +16,9 @@ gevrSeqTests.park = function (data, bootnum = NULL, method = c("ed", "pbscore", 
     for (i in 1:R) {
       result[i, 1] <- i
       if (method == "multscore") 
-        fit <- eva::gevrMultScore(data[, 1:i], bootnum, information)
+        fit <- gevrMultScore(data[, 1:i], bootnum, information)
       if (method == "pbscore") 
-        fit <- eva::gevrPbScore(data[, 1:i], bootnum, information, 
+        fit <- gevrPbScore(data[, 1:i], bootnum, information, 
                            allowParallel, numCores)
       result[i, 2] <- fit$p.value
       result[i, 5] <- fit$statistic
@@ -66,7 +66,7 @@ gevrEd.park1 =function (data, theta = NULL)
   ifail=0
   
   if (is.null(theta)) {
-    y <- tryCatch(eva::gevrFit(data, method = "mle"), error = function(w) {
+    y <- tryCatch(gevrFit(data, method = "mle"), error = function(w) {
       return(NULL)
     }, warning = function(w) {
       return(NULL)
@@ -86,10 +86,10 @@ gevrEd.park1 =function (data, theta = NULL)
   }
   
   if(theta[2] < 1e-4) theta[2]= 1e-4
-  Diff1 <- eva::dgevr(data[, 1:R], loc = theta[1], scale = theta[2], 
+  Diff1 <- dgevr(data[, 1:R], loc = theta[1], scale = theta[2], 
                  shape = theta[3], log.d = TRUE)
   
-  Diff2= eva::dgevr(data[, 1:(R-1)], loc = theta[1], scale = theta[2], 
+  Diff2= dgevr(data[, 1:(R-1)], loc = theta[1], scale = theta[2], 
                shape = theta[3], log.d = TRUE)
   
   Diff= Diff1 - Diff2

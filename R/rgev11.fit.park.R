@@ -146,8 +146,8 @@ ginit.max.lme <-function(data,ntry=ntry, pretheta=NULL){
   
   init <-matrix(0, nrow=ntry, ncol=5)
   
-  lmom_init = lmomco::lmoms(data,nmom=5)
-  lmom_est <- lmomco::pargev(lmom_init)
+  lmom_init = lmoms(data,nmom=5)
+  lmom_est <- pargev(lmom_init)
   
   init[1,1] <- lmom_est$para[1]
   init[1,2] <- 0.001

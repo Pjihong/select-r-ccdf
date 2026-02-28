@@ -1,31 +1,3 @@
-#' Select Optimal r for r-Largest GEV Model (RGEV)
-#'
-#' Sequentially tests goodness-of-fit to select the optimal number r of
-#' r-largest order statistics under the stationary GEV model (RGEV).
-#'
-#' @param xdat A numeric matrix of r-largest order statistics (n x maxr).
-#' @param sigL Significance level for the sequential GOF test (default 0.05).
-#' @param num_inits Number of random starting points for MLE optimisation.
-#' @param method GOF test method: \code{"ed"}, \code{"ccdf"}, or \code{"spacing"}.
-#' @param seq.cut Logical; if \code{TRUE} (default), stop at first rejection.
-#' @param qqplot Logical; if \code{TRUE}, produce Q-Q plots.
-#'
-#' @return A list with components:
-#' \item{r.sel}{Selected r value.}
-#' \item{mle}{MLE parameter vector (mu, sigma, kappa).}
-#' \item{pval}{p-values from sequential GOF tests.}
-#' \item{result}{Full result matrix for all tested r values.}
-#'
-#' @examples
-#' \dontrun{
-#' library(eva)
-#' set.seed(1)
-#' xdat <- gevrSim(n = 50, r = 8, gumbel = TRUE)
-#' rsel.rgev(xdat, method = "ed", sigL = 0.05)
-#' }
-#'
-#' @seealso \code{\link{rsel.rgev11}}, \code{\link{rgev.fit.park}}
-#' @export
 
 # method="spacing"
 # pplot=TRUE  # test="ad" 

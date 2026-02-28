@@ -1,10 +1,3 @@
-#' Fit r-Largest GEV Model (Stationary)
-#' @param xdat matrix of r-largest order statistics
-#' @param r number of order statistics to use
-#' @param num_inits number of initial values
-#' @param ... additional arguments
-#' @return list with mle, nllh
-#' @export
 #--------------------------------------------------------------
 #-------------------------------------------------------    
 rgev.fit.park = function(xdat=NULL, r=NULL, num_inits=10, 
@@ -284,7 +277,7 @@ gev.max.consT=function (xdat, ntry=20, lowb= -1.0,
   tryCatch(
     for(i in 1:nrow(init)){
       
-      value <- try(Rsolnp::solnp(init[i,], fun=gev.lik.max, 
+      value <- try(solnp(init[i,], fun=gev.lik.max, 
                          LB =c(-Inf,0,lowb),UB =c(Inf,Inf,1.0),     # hosking style para
                          control=list(trace=0, outer.iter=40,
                                       delta=1.e-6, inner.iter=100, 
@@ -322,8 +315,8 @@ ginit.max <-function(data,ntry){
   n=ntry
   init <-matrix(rep(0,n*3),ncol=3)
   
-  lmom_init = lmomco::lmoms(data,nmom=5)
-  lmom_est <- lmomco::pargev(lmom_init)
+  lmom_init = lmoms(data,nmom=5)
+  lmom_est <- pargev(lmom_init)
   
   init[1,1]    <-lmom_est$para[1]
   init[1,2]    <-lmom_est$para[2]
