@@ -155,8 +155,13 @@ The five κ scenarios correspond to heavy-tailed (negative κ) to short-tailed (
 
 ### Visualization Code
 
-The figures above were produced with the following R code.
-CSV files from the simulation run are read, reshaped to long format, and plotted with `ggplot2`.
+The figures above were produced by the script below.
+To reproduce them, run:
+```r
+source("inst/examples/visualize_simulation.R")
+```
+
+> Full code: [`inst/examples/visualize_simulation.R`](inst/examples/visualize_simulation.R)
 
 ---
 
