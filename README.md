@@ -20,7 +20,6 @@ Three GOF test methods are available: `"ed"` (energy distance), `"ccdf"` (comple
 ---
 
 ## Installation
-
 ```r
 # Install from GitHub
 # install.packages("remotes")
@@ -28,7 +27,6 @@ remotes::install_github("Pjihong/select-r-ccdf")
 ```
 
 **Dependencies** (installed automatically):
-
 ```r
 install.packages(c("goftest", "Rsolnp", "lmomco", "eva"))
 ```
@@ -38,7 +36,6 @@ install.packages(c("goftest", "Rsolnp", "lmomco", "eva"))
 ## Quick Start
 
 ### Stationary model (RGEV)
-
 ```r
 library(selectrgev)
 library(eva)
@@ -52,7 +49,6 @@ cat("MLE (mu, sigma, kappa) =", result$mle, "\n")
 ```
 
 ### Nonstationary model (RGEV11)
-
 ```r
 library(selectrgev)
 
@@ -71,7 +67,6 @@ cat("Selected r =", result$r.sel, "\n")
 ## Main Functions
 
 ### `rsel.rgev()`
-
 ```r
 rsel.rgev(xdat, sigL = 0.05, num_inits = 5,
           method = c("ed", "ccdf", "spacing"),
@@ -79,7 +74,6 @@ rsel.rgev(xdat, sigL = 0.05, num_inits = 5,
 ```
 
 ### `rsel.rgev11()`
-
 ```r
 rsel.rgev11(xdat, model = "rgev11", sigL = 0.05,
             method = c("ed", "ccdf", "spacing"),
@@ -115,13 +109,59 @@ rsel.rgev11(xdat, model = "rgev11", sigL = 0.05,
 ## Example: Simulation Study
 
 See `inst/examples/rsel_gev11_simulation.R` for a full Monte Carlo simulation study evaluating selection accuracy under various shape parameters and sample sizes.
-
 ```r
 # Run the simulation example
 example_path <- system.file("examples", "rsel_gev11_simulation.R",
                              package = "selectrgev")
 source(example_path)
 ```
+
+---
+
+## 📊 Simulation Results
+
+### Setup
+
+The simulation study evaluates the r-selection accuracy of three methods under the **RGEV11** (nonstationary) model with the following settings:
+
+| Item | Value |
+|------|-------|
+| Model | `rgev11` |
+| True r | 4 |
+| Sample sizes (n) | 30, 50, 80 |
+| Shape parameter (κ) | −0.35, −0.20, ≈ 0, 0.20, 0.35 |
+| Replications | 200 |
+| Contamination | `contam_rlosr()`, mixp = 0.5 |
+
+The five κ scenarios correspond to heavy-tailed (negative κ) to short-tailed (positive κ) distributions, covering a wide range of practical conditions in extreme value analysis.
+
+### Figure 1 — Distribution of Estimated r
+
+![Frequency by Method](figures/fig1_freq_by_method.png)
+
+> The red dashed line marks the true r value (r = 4).  
+> Methods: **ED** (blue) · **CCDF** (purple) · **Spacings** (orange).  
+> x-axis: estimated r · y-axis: frequency out of 200 simulations.  
+> Rows: κ scenario · Columns: sample size (n = 30, 50, 80).
+
+### Figure 2 — Bias and RMSE Summary
+
+![Bias and RMSE](figures/fig2_bias_rmse_summary.png)
+
+> Bias (top) and RMSE (bottom) of the selected r across scenarios and sample sizes.  
+> Dashed horizontal line at 0 indicates unbiased selection.
+
+---
+
+### Visualization Code
+
+The figures above were produced by the script below.
+To reproduce them, run:
+```r
+source("inst/examples/visualize_simulation.R")
+```
+
+> Full code: [`inst/examples/visualize_simulation.R`](inst/examples/visualize_simulation.R)
 
 ---
 
@@ -150,7 +190,6 @@ GPL-3 © Pjihong
 | 변수 | `year`, `X1`(연최대) ~ `X20`(20번째 최대) |
 | 단위 | mm (일강수량) |
 | 크기 | 51 × 21 |
-
 ```r
 data(sancheong)
 head(sancheong)
@@ -168,7 +207,6 @@ cat("Selected r =", result$r.sel, "\n")
 ## 📊 내장 데이터: `sancheong`
 
 산청 기상관측소(경남) 연 최대 일강수량 r-largest 순서통계량
-
 ```r
 data(sancheong)
 head(sancheong)
@@ -183,7 +221,6 @@ head(sancheong)
 | r 최대 | 20 (연간 최대 20개 값) |
 | 단위 | mm (일강수량) |
 | 출처 | 기상청 (KMA) |
-
 ```r
 # 실제 데이터로 r 선택
 data(sancheong)
