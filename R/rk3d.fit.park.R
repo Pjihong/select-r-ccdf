@@ -6,11 +6,14 @@
 #------------------------------------------------------------------
 rk3d.fit.park = function (xdat, r = NULL, h.fix=NULL, covpar=FALSE,
                           penk = NULL, penh = NULL, ydat = NULL, 
-                          mul = NULL, sigl = NULL, shl = NULL, hl = NULL, mulink = identity, 
+                          mul = NULL, sigl = NULL, shl = NULL,
+                          hl = NULL, mulink = identity, 
                           siglink = identity, shlink = identity, hlink = identity, 
-                          num_inits = 50, muinit = NULL, siginit = NULL, shinit = NULL, 
-                          hinit = NULL, show = TRUE, method = "Nelder-Mead", maxit = 2000, 
-                          uph=1.20, reltol=1.e-8,
+                          num_inits = 20, muinit = NULL, 
+                          siginit = NULL, shinit = NULL, 
+                          hinit = NULL, show = TRUE, 
+                          method = "Nelder-Mead", maxit = 1000, 
+                          uph=1.20, reltol=1.e-5,
                           low.xi= -0.7,
                           ...) 
 {
@@ -130,12 +133,12 @@ rk3d.fit.park = function (xdat, r = NULL, h.fix=NULL, covpar=FALSE,
     # }
 
     if( h >= 0 & xi <= -1) return(10^6) # park
-    if( xi <= low.xi | xi > 2.9999) return(10^6) # park
+    if( xi <= low.xi | xi > 1.0) return(10^6) # park
     if( abs(xi) <= 0.001) xi = sign(xi)*0.001
     if( abs(h) <= 0.001) h = sign(h)*0.001
-    if( h <=  -4.5 | h > uph) return(10^6) # park
+    if( h <=  -1.5 | h > uph) return(10^6) # park
     if( sc > 5*kappar[2]) return(10^6) # park
-    if( h < 0 & xi*h <= -1) return(10^6) # park
+    if( h < 0 & xi*h < -1) return(10^6) # park
     
     y <- (as.vector(xdat[,1]) - mu)/sc
     y <- 1 - xi * y
@@ -222,14 +225,14 @@ rk3d.fit.park = function (xdat, r = NULL, h.fix=NULL, covpar=FALSE,
     #   h <- h.fix #drop(hmat %*% (a[seq(npmu + npsc + nph + 1, length = nph)]))
     # }
     
-    if( xi <= low.xi | xi > 2.999) return(10^6) # park
+    if( xi <= low.xi | xi > 1) return(10^6) # park
     if( abs(xi) <= 0.001) xi = sign(xi)*0.001
     if( abs(h) <= 0.001) h = sign(h)*0.001
     if( sc <= 0.001) sc = 0.001
  
-    if( h <=  -4.5 | h > uph) return(10^6) # park
+    if( h <=  -1.5 | h > uph) return(10^6) # park
     if(sc > 5*kappar[2]) return(10^6) # park
-    if( h < 0 & xi*h <= -1) return(10^6) # park
+    if( h < 0 & xi*h <  -1) return(10^6) # park
     
     ri <- (r - seq(1:(r)))
     cr <- (1 - ri * h[1])
@@ -442,7 +445,7 @@ rk3d.fit.park = function (xdat, r = NULL, h.fix=NULL, covpar=FALSE,
   
   if( is.null(best_result) ) {
     warning("no solution for rk3d was found: solution for rgev is obtained")
-    z = rgev.fit.park(xdat, r=r, num_inits=30, show=F)
+    z = rgev.fit.park(xdat, r=r, num_inits=10, show=F)
     z$mle[4] = h.fix
     z$conv=10
     penk=NULL; penh=NULL

@@ -19,6 +19,52 @@ Three GOF test methods are available: `"ed"` (energy distance), `"ccdf"` (comple
 
 ---
 
+## 🆕 Update (31 Aug 2026) — Main program: `rsel.rgev.SeqStop()`
+
+The code has been updated. The **main program is now `rsel.rgev.SeqStop()`**
+(`R/rsel.rgev.SeqStop.R`), which selects the optimal *r* by sequential
+goodness-of-fit testing with stopping rules (raw p-values, then **ForwardStop**
+and **StrongStop** adjusted for sequential multiple testing).
+
+```r
+rsel.rgev.SeqStop(xdat, sigL = 0.05, num_inits = 10,
+                  method = c("ed", "ccdf", "spacing"),
+                  test = "cvm", pplot = FALSE)
+```
+
+Example with the included Sancheong rainfall data:
+
+```r
+library(selectrgev)
+
+data(sancheong)
+xdat <- na.omit(sancheong[, 2:21])
+
+rsel.rgev.SeqStop(xdat, sigL = 0.05, method = "ed")
+rsel.rgev.SeqStop(xdat, sigL = 0.05, method = "ccdf")
+rsel.rgev.SeqStop(xdat, sigL = 0.05, method = "spacing", pplot = TRUE)
+```
+
+**Return value:** a list with `method`, `rsel` (selected r), and `result`
+(per-r table of p-values, ForwardStop, StrongStop, and parameter estimates).
+
+Files added or updated in this release:
+
+| File | Status | Note |
+|------|--------|------|
+| `R/rsel.rgev.SeqStop.R` | **new — main program** | Sequential selection with stopping rules |
+| `R/rccdf.gof.new.R` | new | Conditional CCDF GOF transform (`rccdf.gof.new()`) |
+| `R/spacing.gof.rgev.R` | new | Spacing GOF transform (`spacing.gof()`) |
+| `R/rgev.fit.park.R` | updated | Tuned default `ntry` values |
+| `R/rk3d.fit.park.R` | updated | Tuned defaults and parameter bounds |
+
+The full changelog is in [`NEWS.md`](NEWS.md). Earlier versions of every file
+remain available in the git history (open a file on GitHub and click
+**History**), and each release is archived under
+[Releases](https://github.com/Pjihong/select-r-ccdf/releases).
+
+---
+
 ## Installation
 ```r
 # Install from GitHub

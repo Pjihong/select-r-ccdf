@@ -29,7 +29,7 @@ rgev.fit.park = function(xdat=NULL, r=NULL, num_inits=10,
 }
 #------------------------------------------------------
 #-------------------------------------------------------------  
-rgevmle.park = function(xdat, numr=NULL, ntry=30, lowb= -1.0, 
+rgevmle.park = function(xdat, numr=NULL, ntry=10, lowb= -1.0, 
                         reltol=1e-6, const=TRUE, qpro=NULL,
                         start.para=NULL){
   
@@ -234,7 +234,7 @@ rlarg.fit.consT.stnry = function (xdat, r = dim(xdat)[2], init=NULL, ydat = NULL
 }
 # ----------------------------------------------------------------
 #------------------------------------------------------------
-gev.max.consT=function (xdat, ntry=20, lowb= -1.0, 
+gev.max.consT=function (xdat, ntry=10, lowb= -1.0, 
                         reltol=1e-6, const=TRUE, start.para=NULL) 
 {
   z <- list();  k =list()           # hosking style para
