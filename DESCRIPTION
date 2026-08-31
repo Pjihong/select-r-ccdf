@@ -1,10 +1,13 @@
 Package: selectrgev
 Type: Package
-Title: Selection of r-Largest Order Statistics via GEV-Based Models
+Title: Automated selection of r for stationary and nonstationary r largest order statistics models
 Version: 0.2.0
 Date: 2026-08-31
-Authors@R: person("Pjihong", role = c("aut", "cre"),
-                  email = "pjihong@example.com")
+Authors@R: c(
+    person("Yire", "Shin", role = "aut"),
+    person("Jihong", "Park", role = "aut"),
+    person("Jeong-Soo", "Park", email = "jspark@jnu.ac.kr", role = c("aut", "cre"))
+    )
 Description: Provides tools for selecting the optimal number of r-largest
     order statistics using GEV-based models (RGEV and RGEV11). The main
     functions rsel.rgev() and rsel.rgev11() implement sequential selection
