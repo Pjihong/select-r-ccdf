@@ -3,16 +3,22 @@ library(Rsolnp)
 library(lmomco)
 library(eva)
 
+# xdat= na.omit(sancheong[,2:21])
+
+# rsel.rgev11(xdat, method="ed", sigL=0.05)
+# rsel.rgev11(xdat, method="ccdf", qqplot=TRUE, sigL=0.05)
+# rsel.rgev11(xdat, method="spacing", qqplot=TRUE, sigL=0.05)
 #--------------------------------------------------------------------
 rsel.rgev11= function(xdat, model='rgev11', sigL=0.05, 
                           method=c("ed","ccdf","spacing"),
-                          num_inits=15, seq.cut=TRUE, 
+                          num_inits=10, seq.cut=TRUE, 
                           qqplot=FALSE){
   
   z=list()                                     # model='rgev11' 
 #  work.mle=paste(model,".fit.park",sep="")     # work.mle='rgev11.fit.park'
   z$model= model
   z$method= method
+  z$sig = sigL
   
   ns=nrow(xdat); dim=ncol(xdat)
   marg.pval= rep(NA,dim)
@@ -32,27 +38,44 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
       
 #      cat("sth=",sth,"\n")
       
-      gof = rgev11.fit.park(xdat, r= sth, 
+      gof = rgev11.fit.park(as.matrix(xdat[,1:sth]), r= sth, 
                             num_inits=num_inits,
                             start.para=st.para)
       result[sth,2:6]= gof$mle
       
       if(result[sth,6] < -0.5){
-        gof = rgev11.fit.park(xdat, r= sth, 
-                              num_inits=num_inits*2,
+        gof = rgev11.fit.park(as.matrix(xdat[,1:sth]),
+                              r= sth, reltol=1e-5,
+                              num_inits=num_inits,
                               start.para=st.para, penk="CD")
         result[sth,2:6]= gof$mle
       }
       
       result[sth,8]= gof$nllh
-      
-      ztilda = ns.trsf.rlos.Gum(xdat,para=result[sth,2:6],
-                                sth=sth, method=method)
+
      
-      if(method=="ed" & sth ==1) result[sth,7]=1
+      if(method=="ed" & sth ==1) {
+        
+        ztilda = ns.trsf.rlos.Gum(as.matrix(xdat[,1:sth]),
+                                  para=result[sth,2:6],
+                                  sth=sth, method=method)
+ 
+        empF= cdfgev(as.vector(ztilda[,1]), 
+                              vec2par(c(0,1,0),"gev"))
+        
+        result[sth,7]= cvm.test(empF, null="punif")$p.value
+        
+        if(result[sth,7] < sigL){z$r.sel=r.sel= sth-1; break}
+      }
+
       if(method=="ed" & sth >=2){
         
-        Ed.test=ed.gum.gof(ztilda,r=sth,parx=c(0,1,-1e-5))
+        ztilda = ns.trsf.rlos.Gum(as.matrix(xdat[,1:sth]),
+                                  para=result[sth,2:6],
+                                  sth=sth, method=method)
+        
+        Ed.test= ed.gum.gof(ztilda,r=sth,parx=c(0,1,-1e-5))
+        
         result[sth,7] = Ed.test$p.value
         
         if(result[sth,7] < sigL){z$r.sel=r.sel= sth-1; break}
@@ -72,7 +95,20 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
         if(result[sth,7] < sigL){z$r.sel=r.sel= sth-1; break}
       }
       
-      if(method=="spacing" & sth ==1) result[sth,7]=1
+      if(method=="spacing" & sth ==1) {  
+        
+        ztilda = ns.trsf.rlos.Gum(as.matrix(xdat[,1:sth]),
+                                  para=result[sth,2:6],
+                                  sth=sth, method=method)
+        
+        Ugev= cdfgev(sort(as.vector(ztilda[,1])), 
+                    vec2par(c(0,1,0),"gev"))
+        
+        result[sth,7]= cvm.test(Ugev, null="punif")$p.value
+        
+        if(result[sth,7] < sigL){z$r.sel=r.sel= sth-1; break}
+      }
+
       if(method=="spacing" & sth >= 2){
         
         iD[,sth]= spacing.gof.gev11(xdat, r= sth-1, 
@@ -87,59 +123,59 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
 
     } #end while
     
-  }else if(seq.cut==FALSE){
-    
-    for(sth in 1:dim){
-      
-      if(sth==1) {st.para=NULL
-      }else{st.para= result[sth-1,2:6]}
-      result[sth,1]= sth
-      
-#      cat("sth=",sth,"\n")
-      
-      gof = rgev11.fit.park(xdat, r= sth, 
-                            num_inits=num_inits,
-                            start.para=st.para)
-      result[sth,2:6]= gof$mle
-      
-      if(result[sth,6] < -0.5){
-        gof = rgev11.fit.park(xdat, r= sth, 
-                              num_inits=num_inits*2,
-                              start.para=st.para, penk="CD")
-        result[sth,2:6]= gof$mle
-      }
-      
-      result[sth,8]= gof$nllh
-      
-      ztilda = ns.trsf.rlos.Gum(xdat,para=result[sth,2:6],
-                                sth=sth, method=method)
-      
-      if(method=="ed" & sth >=2){
-        
-        Ed.test=ed.gum.gof(ztilda,r=sth,parx=c(0,1,-1e-5))
-        result[sth,7] = Ed.test$p.value
-
-      }
-
-      if(method=="ccdf"){
-        
-        mtheoU[,sth]= rcond.gof.gev11(xdat, r=sth, model=model,
-                                      parx=result[sth,2:6])
-        result[sth,7]= cvm.test(mtheoU[,sth], null="punif")$p.value
-        
-      }
-      if(method=="spacing" & sth >= 2){
-        
-        iD[,sth]= spacing.gof.gev11(xdat, r= sth-1, 
-                                    parx=result[sth,2:6])
-        result[sth,7]= cvm.test(iD[,sth], null="pexp")$p.value 
-      }
-      
-    } #end for sth
-    
-    if(method=="spacing" | method=="ed") result[1,7]=1
-    id.rej = which(result[,7] < sigL)
-    z$r.sel = min(id.rej, dim+1)-1
+#   }else if(seq.cut==FALSE){
+#     
+#     for(sth in 1:dim){
+#       
+#       if(sth==1) {st.para=NULL
+#       }else{st.para= result[sth-1,2:6]}
+#       result[sth,1]= sth
+#       
+# #      cat("sth=",sth,"\n")
+#       
+#       gof = rgev11.fit.park(xdat, r= sth, 
+#                             num_inits=num_inits,
+#                             start.para=st.para)
+#       result[sth,2:6]= gof$mle
+#       
+#       if(result[sth,6] < -0.5){
+#         gof = rgev11.fit.park(xdat, r= sth, 
+#                               num_inits=num_inits*2,
+#                               start.para=st.para, penk="CD")
+#         result[sth,2:6]= gof$mle
+#       }
+#       
+#       result[sth,8]= gof$nllh
+#       
+#       ztilda = ns.trsf.rlos.Gum(xdat,para=result[sth,2:6],
+#                                 sth=sth, method=method)
+#       
+#       if(method=="ed" & sth >=2){
+#         
+#         Ed.test=ed.gum.gof(ztilda,r=sth,parx=c(0,1,-1e-5))
+#         result[sth,7] = Ed.test$p.value
+# 
+#       }
+# 
+#       if(method=="ccdf"){
+#         
+#         mtheoU[,sth]= rcond.gof.gev11(xdat, r=sth, model=model,
+#                                       parx=result[sth,2:6])
+#         result[sth,7]= cvm.test(mtheoU[,sth], null="punif")$p.value
+#         
+#       }
+#       if(method=="spacing" & sth >= 2){
+#         
+#         iD[,sth]= spacing.gof.gev11(xdat, r= sth-1, 
+#                                     parx=result[sth,2:6])
+#         result[sth,7]= cvm.test(iD[,sth], null="pexp")$p.value 
+#       }
+#       
+#     } #end for sth
+#     
+#     if(method=="spacing" | method=="ed") result[1,7]=1
+#     id.rej = which(result[,7] < sigL)
+#     z$r.sel = min(id.rej, dim+1)-1
     
   } #end if seq.cut
   
@@ -159,6 +195,14 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
         abline(a=0,b=1) }
     }
     if(method=="spacing"){
+      
+      plot(ff, Ugev,
+           main=paste("r=",1,sep=" "),
+           ylab="spacing.model", 
+           xlab=paste("EDF: p=",round(result[1,7],3),sep=" "),
+           pch=16, col="blue") 
+      abline(a=0,b=1)
+      
       for(sth in 2:work.r){
         plot(ff, pexp(iD[,sth]), main=paste("r=",sth,sep=" "),
              ylab="spacing.model", 
@@ -178,12 +222,13 @@ rsel.rgev11= function(xdat, model='rgev11', sigL=0.05,
   z
 }
 
-#-----------------------
+#---------------------------------------------------------------------
 ns.trsf.rlos.Gum=function(xdat, para=null, sth=null,
                           method=NULL)
 {
   ns=nrow(xdat)
-  if(is.null(maxr)) maxr=ncol(xdat)
+  maxr=ncol(xdat)
+  
   mu0 =para[1]
   mu1 =para[2]
   sig0=para[3]
@@ -193,7 +238,7 @@ ns.trsf.rlos.Gum=function(xdat, para=null, sth=null,
   mut <- mu0+mu1*c(1:ns)
   sigt<- exp(sig0+sig1*c(1:ns))
   xi  <- xi 
-  ztilda=matrix(0,ns,maxr)
+  ztilda= matrix(0,ns,maxr)
   
   if(method=="ed") {wsth=1
   }else{ wsth=max(1, sth-1)}
@@ -207,7 +252,7 @@ ns.trsf.rlos.Gum=function(xdat, para=null, sth=null,
   }
   ztilda
 }     
-#------------------------------------
+#-----------------------------------------------------------------------
 #-------------------------
 ed.gum.gof=function(data,r=NULL,parx=NULL){
   
@@ -311,28 +356,3 @@ spacing.gof.gev11 = function(xdat=NULL, r=NULL, parx=NULL){
   sort(sth*D)
 }
 #-----------------------------------------------------
-
-#------------------------------------
-#-------------------------------------------------------------------
-# ns=nrow(xdat)
-# ff= (seq(1:ns)-0.35)/ns
-# dim= ncol(xdat)
-# 
-# par(new=F); par(mfrow=c(2,5))
-# lme.s=list()
-# 
-# for (sth in 1:dim){                        # sth=1
-#   lme.s[[sth]] = parrgev.s(xdat,s=sth)
-#   
-#   if(lme.s[[sth]]$Ifail==0){
-#     qua= quargev.s(ff, s=sth, para=lme.s[[sth]]$para)
-#     
-#     plot(sort(xdat[,sth]),qua,
-#          main=paste("marg qq, s=",sth,sep=" "), pch=16)
-#     abline(a=0,b=1)
-#   }else{
-#     cat("non-zero Ifail, s=",sth,"\n")
-#   }
-# }
-# 
-# cvm.test.lmomco(qua,lme.s[[dim]])

@@ -31,11 +31,12 @@
 # T = "TRUE" const=T
 # penk= "CD"
 
-# rgev11.fit.park(xdat)
+ # newdat=as.matrix(xdat)
+ # rgev11.fit.park(newdat, r=1)
 #------------------------------------------------------
 #-------------------------------------------------------------  
 rgev11.fit.park = function(xdat, r=NULL, num_inits=10, lowb= -1.0, 
-                        reltol=1e-6, const=TRUE, maxit=1000,
+                        reltol=1e-6, const=TRUE, maxit=200,
                         start.para=NULL, penk=NULL){
   
   k=list(); z=list()  # numr=4, ntry=6
@@ -88,18 +89,19 @@ rgev11.fit.park = function(xdat, r=NULL, num_inits=10, lowb= -1.0,
 
   z
 }
-#---------------------------------------  
-rlarg.lik.gev11 <- function(a, lowb=lowb, const=const,
-                            ti=ti, xdatu=xdatu, penk=penk, r=r) {
+#-------------------------------------------------------------------- 
+rlarg.lik.gev11 <- function(a=NULL, lowb=lowb, const=const,
+                            ti=ti, xdatu=xdatu, 
+                            penk=penk, r=r) {
   
   # mu0 <- a[1] #mulink(drop(mumat %*% (a[1:npmu])))
   # mu1 <- a[2] #siglink(drop(sigmat %*% (a[seq(npmu + 1, length = npsc)])))
   # sig0 = a[3]
   # sig1 = a[4]
   
-  mu= a[1]+a[2]*ti
+  mu= a[1]+a[2]*ti 
   sc= exp(a[3]+ a[4]*ti)
-  xi <- a[5] 
+  xi <- a[5] # coles style
 
   if(const==TRUE & xi < lowb) return(10^6)
   
@@ -138,7 +140,7 @@ rlarg.lik.gev11 <- function(a, lowb=lowb, const=const,
   if(is.null(penk)) {penalty =0
   }else{ penalty <- r * log(p_k) }
   
-  l -penalty
+  l -penalty  
 }
 #-----------------------------------------------
 #------------------------------------------------------
