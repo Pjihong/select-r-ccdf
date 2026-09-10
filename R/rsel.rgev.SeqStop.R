@@ -1,3 +1,9 @@
+# Updated: 2026-09-10
+# Source: rsel.rgev.SeqStop_open_10Sep26.R
+# Note: Replaced the previous code with the supplied revision
+#       intended to address an execution error.
+#       Retained the original filename: rsel.rgev.SeqStop.R.
+
 library(eva)
 library(goftest)
 library(evmr)
@@ -50,8 +56,8 @@ rsel.rgev.SeqStop = function(xdat, sigL=0.05, num_inits=10,
   
   ED.result= rbind(ed1, ED0)
   
-  # ED.result[, 3] <- rev(pSeqStop(rev(ED.result[, 2]))$ForwardStop)
-  # ED.result[, 4] <- rev(pSeqStop(rev(ED.result[, 2]))$StrongStop)
+  ED.result[, 3] <- rev(pSeqStop(rev(ED.result[, 2]))$ForwardStop)
+  ED.result[, 4] <- rev(pSeqStop(rev(ED.result[, 2]))$StrongStop)
   
   if(method=="ed"){
     R=dim
